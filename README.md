@@ -35,7 +35,7 @@ HDEVINFO SetupDiGetClassDevs(_In_opt_ const GUID *ClassGuid,_In_opt_ PCTSTR Enum
 from winusbpy import *
 from ctypes import *
 from ctypes.wintypes import *
-from winusbclasses import DIGCF_DEVICE_INTERFACE, DIGCF_PRESENT
+from winusbpy.winusbclasses import DIGCF_DEVICE_INTERFACE, DIGCF_PRESENT
 
 api = WinUSBApi()
 byte_array = c_byte * 8
