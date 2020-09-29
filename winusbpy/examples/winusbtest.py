@@ -3,7 +3,7 @@ import time
 from winusbpy import *
 from ctypes import *
 from ctypes.wintypes import *
-from ..winusbclasses import DIGCF_DEVICE_INTERFACE, DIGCF_PRESENT, GENERIC_WRITE, GENERIC_READ, FILE_SHARE_READ, \
+from winusbpy.winusbclasses import DIGCF_DEVICE_INTERFACE, DIGCF_PRESENT, GENERIC_WRITE, GENERIC_READ, FILE_SHARE_READ, \
     FILE_SHARE_WRITE, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, FILE_FLAG_OVERLAPPED, INVALID_HANDLE_VALUE
 
 pl2303_vid = "067b"
@@ -35,21 +35,21 @@ pkt19 = UsbSetupPacket(0xc0, 0x01, 0x0081, 0x00, 0x02)
 pkt20 = UsbSetupPacket(0x40, 0x01, 0x0000, 0x01, 0x00)
 
 """ USB Data"""
-hello = create_string_buffer("Hello")
+hello = create_string_buffer(b"Hello")
 header = create_string_buffer(
-    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x01\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00")
-tx1 = create_string_buffer("\x18")
-tx2 = create_string_buffer("\x08")
-tx3 = create_string_buffer("\x08")
-tx4 = create_string_buffer("\x14")
-tx5 = create_string_buffer("\x14")
-tx6 = create_string_buffer("\x22")
-tx7 = create_string_buffer("\x3e")
-tx8 = create_string_buffer("\x22")
-tx9 = create_string_buffer("\x77")
-tx10 = create_string_buffer("\x00")
-tx11 = create_string_buffer("\x00")
-tx12 = create_string_buffer("\x00")
+    b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x01\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00\x08\x01\x00\x00")
+tx1 = create_string_buffer(b"\x18")
+tx2 = create_string_buffer(b"\x08")
+tx3 = create_string_buffer(b"\x08")
+tx4 = create_string_buffer(b"\x14")
+tx5 = create_string_buffer(b"\x14")
+tx6 = create_string_buffer(b"\x22")
+tx7 = create_string_buffer(b"\x3e")
+tx8 = create_string_buffer(b"\x22")
+tx9 = create_string_buffer(b"\x77")
+tx10 = create_string_buffer(b"\x00")
+tx11 = create_string_buffer(b"\x00")
+tx12 = create_string_buffer(b"\x00")
 
 api = WinUSBApi()
 byte_array = c_byte * 8
@@ -85,6 +85,7 @@ while api.exec_function_setupapi("SetupDiEnumDeviceInterfaces", hdev_info, None,
                                   byref(sp_device_interface_detail_data), required_size, byref(required_size),
                                   byref(sp_device_info_data)):
         path = wstring_at(byref(sp_device_interface_detail_data, sizeof(DWORD)))
+        # print(path)
         if is_device(pl2303_vid, pl2303_pid, path):
             print("PL 2303 PATH: " + path)
             break
@@ -101,7 +102,7 @@ while api.exec_function_setupapi("SetupDiEnumDeviceInterfaces", hdev_info, None,
 handle_file = api.exec_function_kernel32("CreateFileW", path, GENERIC_WRITE | GENERIC_READ,
                                          FILE_SHARE_WRITE | FILE_SHARE_READ, None, OPEN_EXISTING,
                                          FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, None)
-if INVALID_HANDLE_VALUE == handle_file:
+if INVALID_HANDLE_VALUE.value == handle_file:
     print("Error Creating File")
 else:
     print("No error")
